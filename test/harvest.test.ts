@@ -18,6 +18,7 @@ import {
   type SolutionRecord,
 } from "../src/capture.js";
 import { distillRecords, slugify, triage, renderStagedNote, dedup } from "../src/distill.js";
+import { recordCommand } from "../src/commands.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_HOME = pathJoin(HERE, "fixtures", "home");
@@ -164,5 +165,28 @@ describe("end to end", () => {
     // Long random-looking suffixes would be real-shaped; the mandated
     // placeholder shape (short alpha suffix) must not trip this.
     expect(report).not.toMatch(/sk-(live|test)-[A-Za-z0-9]{20,}/);
+  });
+});
+
+describe("record CLI", () => {
+  test("records one landing with the documented --record-json flag", async () => {
+    const ledger = pathJoin(work, "solution-log.jsonl");
+    const payload = {
+      id: "hook-landing-1",
+      title: "Completion hook landing",
+      kind: "ship",
+    };
+    const out = await recordCommand(
+      ["--record-json", JSON.stringify(payload), "--ledger", ledger],
+      undefined,
+    );
+    expect(out).toMatch(/^record: 1 new -> /);
+    const records = readLedger(ledger);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      id: "hook-landing-1",
+      title: "Completion hook landing",
+      kind: "ship",
+    });
   });
 });

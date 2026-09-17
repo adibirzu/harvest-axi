@@ -73,11 +73,11 @@ export async function captureCommand(args: string[], context: Context | undefine
 export async function recordCommand(args: string[], context: Context | undefined): Promise<string> {
   const { values, positionals } = parseArgs({
     args,
-    options: { ledger: SHARED.ledger, recordJson: { type: "string" }, json: SHARED.json },
+    options: { ledger: SHARED.ledger, "record-json": { type: "string" }, json: SHARED.json },
     allowPositionals: true,
   });
   if (positionals[0] && positionals[0] !== "record") fail(`unexpected argument: ${positionals[0]}`);
-  const raw = values.recordJson;
+  const raw = values["record-json"];
   if (!raw) fail("record requires --record-json '<record-json>' (renamed from --json '<...>' so --json stays the output flag)");
   let parsed: unknown;
   try {
